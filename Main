@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# Update and upgrade Termux packages
+pkg update -y
+pkg upgrade -y
+
+# Install basic utilities
+pkg install -y git wget curl proot-distro
+
+# Install advanced firewall security tools
+pkg install -y ufw
+
+# Install port scanner tools
+pkg install -y nmap
+
+# Install WiFi cracking tools
+pkg install -y aircrack-ng wifite
+
+# Install command terminal support tools
+pkg install -y zsh
+pkg install -y oh-my-zsh
+
+# Install IP Gost for tunneling
+pkg install -y golang
+go install github.com/ginuerzh/gost@latest
+mv ~/go/bin/gost ~/../usr/bin
+
+# Install task manager tools
+pkg install -y htop
+
+# Install signal cracking/tracking tools
+pkg install -y gnuradio
+
+# Install AI-based basic console controls
+pkg install -y figlet lolcat
+
+# Install DDoS attack tools
+pkg install -y python
+pip install slowloris
+
+# Install password cracking tools
+pkg install -y hydra
+
+# Install virus generation tools
+pkg install -y metasploit
+
+# Install HTTP/HTTPS generator tools
+pkg install -y apache2
+
+# Install syntax highlighting with various colors
+pkg install -y bat
+
+# Install image display tools
+pkg install -y termux-api
+pkg install -y imagemagick
+
+# Install support for multiple programming languages
+pkg install -y python python2 nodejs clang gcc g++ openjdk-17 swift rust julia R
+
+# Set custom title and background image for the terminal
+echo -e "\033]0;Tapper\007"
+curl -o ~/skull_X.png https://example.com/skull_X.png
+termux-wallpaper -f ~/skull_X.png
+
+# Clean up
+pkg clean
+
+echo "All tools installed successfully!"
+echo "Tools installed: advanced firewall, port scanner, WiFi cracker, command terminal, IP Gost, task manager, signal cracker/tracker, AI-based basic console controls, DDoS attack, password cracker, virus generator, HTTP/HTTPS generator, syntax highlighting, image display, programming languages"
