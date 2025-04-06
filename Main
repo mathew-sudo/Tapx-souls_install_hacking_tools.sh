@@ -18,17 +18,17 @@ pkg install -y aircrack-ng wifite
 
 # Install command terminal support tools
 pkg install -y zsh
-pkg install -y oh-my-zsh
+pkg install -y my-zsh
 
-# Install IP Gost for tunneling
+# Install IP Ghost for tunneling
 pkg install -y golang
-go install github.com/ginuerzh/gost@latest
-mv ~/go/bin/gost ~/../usr/bin
+go install github.com/ginuerzh/ghost@latest
+mv ~/go/bin/ghost ~/../usr/bin
 
 # Install task manager tools
 pkg install -y htop
 
-# Install signal cracking/tracking tools
+# Install signal track&crack tools
 pkg install -y gnuradio
 
 # Install AI-based basic console controls
@@ -51,8 +51,7 @@ pkg install -y apache2
 pkg install -y bat
 
 # Install image display tools
-pkg install -y termux-api
-pkg install -y imagemagick
+pkg install -y termux-api imagemagick
 
 # Install support for multiple programming languages
 pkg install -y python python2 nodejs clang gcc g++ openjdk-17 swift rust julia R
@@ -62,8 +61,4 @@ echo -e "\033]0;Tapper\007"
 curl -o ~/skull_X.png https://example.com/skull_X.png
 termux-wallpaper -f ~/skull_X.png
 
-# Clean up
-pkg clean
-
-bash ~# ščǎň -All Tools -f -F for -err 
-bash ~# scan Tools or installed: advanced firewall, port scanner, WiFi cracker, command terminal, IP Ghost, task manager, signal cracker/tracker, AI-based basic console controls, DDoS attack, password cracker, virus generator, HTTP/HTTPS generator, syntax highlighting, image display, programming languages"
+# nmap -sn for installation errors
