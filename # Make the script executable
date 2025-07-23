@@ -1,0 +1,8 @@
+# Make the script executable
+chmod +x make-app.sh
+
+# Build the app
+./make-app.sh build
+
+# Or build and install to device
+./make-app.sh all

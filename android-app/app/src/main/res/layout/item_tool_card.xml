@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardBackgroundColor="@color/terminal_bg"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tool_icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔍"
+            android:textSize="32sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tool_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tool Name"
+            android:textColor="@color/matrix_green"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/tool_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tool description here"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
+        <TextView
+            android:id="@+id/tool_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ready"
+            android:textColor="@color/matrix_green"
+            android:textSize="10sp"
+            android:background="@drawable/status_background"
+            android:padding="4dp"
+            android:layout_gravity="center" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
