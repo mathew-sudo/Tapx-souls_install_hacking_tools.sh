@@ -1,3 +1,8 @@
 {
-    "window.title": "Tapx-souls"
+    "window.title": "Tapx-souls",
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#17313A",
+        "titleBar.activeBackground": "#204551",
+        "titleBar.activeForeground": "#F8FBFC"
+    }
 }

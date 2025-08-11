@@ -17,11 +17,22 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+# Create log file with proper permissions
+touch "$LOG_FILE" && chmod 600 "$LOG_FILE"
+
 # Function to display banner
 show_banner() {
     clear
     echo -e "${PURPLE}"
-    figlet -f slant "TAPX-SOULS" 2>/dev/null || echo "TAPX-SOULS"
+    if command -v figlet >/dev/null 2>&1; then
+        figlet -f slant "TAPX-SOULS" 2>/dev/null
+    else
+        echo "████████  █████  ██████  ██   ██      ███████  ██████  ██    ██ ██      ███████ "
+        echo "   ██    ██   ██ ██   ██  ██ ██       ██      ██    ██ ██    ██ ██      ██      "
+        echo "   ██    ███████ ██████    ███   █████ ███████ ██    ██ ██    ██ ██      ███████ "
+        echo "   ██    ██   ██ ██       ██ ██             ██ ██    ██ ██    ██ ██           ██ "
+        echo "   ██    ██   ██ ██      ██   ██       ███████  ██████   ██████  ███████ ███████ "
+    fi
     echo -e "${NC}${CYAN}Advanced Termux Security Arsenal${NC}"
     echo -e "${YELLOW}=================================${NC}"
     echo ""
@@ -51,6 +62,7 @@ is_installed() {
 install_package() {
     local package=$1
     local description=$2
+    local optional=${3:-false}
     
     TOTAL_TOOLS=$((TOTAL_TOOLS + 1))
     
@@ -61,26 +73,55 @@ install_package() {
     fi
     
     log_message "INFO" "Installing $package - $description"
+    echo -ne "${BLUE}[INFO]${NC} Installing $package... "
     
     if pkg install -y "$package" >> "$LOG_FILE" 2>&1; then
+        echo -e "${GREEN}✓${NC}"
         log_message "SUCCESS" "$package installed successfully"
         TOOLS_INSTALLED=$((TOOLS_INSTALLED + 1))
         return 0
     else
-        log_message "ERROR" "Failed to install $package"
-        return 1
+        if [ "$optional" = "true" ]; then
+            echo -e "${YELLOW}⚠${NC} (optional package failed)"
+            log_message "WARNING" "Optional package $package failed to install"
+            return 0
+        else
+            echo -e "${RED}✗${NC}"
+            log_message "ERROR" "Failed to install $package"
+            return 1
+        fi
     fi
+}
+
+# Function to check network connectivity
+check_network() {
+    log_message "INFO" "Checking network connectivity..."
+    if ! ping -c 1 8.8.8.8 >/dev/null 2>&1; then
+        log_message "ERROR" "No internet connection detected"
+        echo -e "${RED}Error: Internet connection required${NC}"
+        exit 1
+    fi
+    log_message "SUCCESS" "Network connectivity confirmed"
 }
 
 # Initialize
 show_banner
 log_message "INFO" "Starting Tapx-souls installation process"
 
+# Check network connectivity
+check_network
+
 # Update and upgrade Termux packages
 log_message "INFO" "Updating package repositories..."
-pkg update -y >> "$LOG_FILE" 2>&1
-pkg upgrade -y >> "$LOG_FILE" 2>&1
-log_message "SUCCESS" "Package repositories updated"
+echo -e "${BLUE}[INFO]${NC} Updating package repositories..."
+if pkg update -y >> "$LOG_FILE" 2>&1 && pkg upgrade -y >> "$LOG_FILE" 2>&1; then
+    log_message "SUCCESS" "Package repositories updated"
+    echo -e "${GREEN}✓${NC} Package repositories updated"
+else
+    log_message "ERROR" "Failed to update package repositories"
+    echo -e "${RED}✗${NC} Failed to update package repositories"
+    exit 1
+fi
 
 # Install basic utilities
 log_message "INFO" "Installing basic utilities..."
@@ -88,118 +129,112 @@ install_package "git" "Version control system"
 install_package "wget" "File downloader"
 install_package "curl" "Data transfer tool"
 install_package "proot-distro" "Linux distribution manager"
+install_package "termux-tools" "Termux utilities"
+install_package "pkg-config" "Package configuration tool"
 
 # Install network security tools
 log_message "INFO" "Installing network security tools..."
 install_package "nmap" "Network discovery and security auditing"
 install_package "netcat-openbsd" "Network connection utility"
+install_package "dnsutils" "DNS utilities"
+install_package "whois" "Domain information lookup"
 
-# Install WiFi cracking tools
-log_message "INFO" "Installing WiFi cracking tools..."
-install_package "aircrack-ng" "WiFi network security testing"
-install_package "wifite" "Automated WiFi cracking tool"
+# Install WiFi cracking tools (some may not be available in Termux)
+log_message "INFO" "Installing WiFi security tools..."
+install_package "aircrack-ng" "WiFi network security testing" "true"
+install_package "wifite" "Automated WiFi cracking tool" "true"
 
 # Install command terminal support tools
-log_message "INFO" "Installing command terminal support tools..."
+log_message "INFO" "Installing terminal enhancement tools..."
 install_package "zsh" "Z shell"
-install_package "my-zsh" "My Zsh configuration"
+install_package "fish" "Friendly interactive shell" "true"
+install_package "bash-completion" "Bash auto-completion"
 
-# Install IP Ghost for tunneling
-log_message "INFO" "Installing IP Ghost for tunneling..."
-install_package "golang" "Go programming language"
-go install github.com/ginuerzh/ghost@latest
-mv ~/go/bin/ghost ~/../usr/bin
+# Install programming languages and development tools
+log_message "INFO" "Installing development tools..."
+install_package "python" "Python programming language"
+install_package "nodejs" "Node.js runtime"
+install_package "golang" "Go programming language" "true"
+install_package "rust" "Rust programming language" "true"
 
 # Install system monitoring tools
 log_message "INFO" "Installing system monitoring tools..."
 install_package "htop" "Interactive process viewer"
 install_package "neofetch" "System information tool"
+install_package "tree" "Directory listing tool"
+install_package "file" "File type identifier"
 
 # Install terminal enhancements
 log_message "INFO" "Installing terminal enhancements..."
 install_package "figlet" "ASCII art text generator"
-install_package "lolcat" "Colorful text output"
-install_package "bat" "Enhanced cat with syntax highlighting"
+install_package "toilet" "Text display tool" "true"
+install_package "cowsay" "Talking cow" "true"
+install_package "bat" "Enhanced cat with syntax highlighting" "true"
+install_package "exa" "Modern ls replacement" "true"
 
-# Install AI-based basic console controls
-log_message "INFO" "Installing AI-based basic console controls..."
-install_package "figlet" "ASCII art text generator"
-install_package "lolcat" "Colorful text output"
-
-# Install DDoS attack tools
-log_message "INFO" "Installing DDoS attack tools..."
-install_package "python" "Python programming language"
-pip install slowloris
+# Install Python packages for security tools
+log_message "INFO" "Installing Python security packages..."
+if command -v pip >/dev/null 2>&1; then
+    pip install --upgrade pip >> "$LOG_FILE" 2>&1
+    
+    # Install common security Python packages
+    python_packages=(
+        "requests"
+        "beautifulsoup4"
+        "scapy"
+        "paramiko"
+        "pycryptodome"
+        "colorama"
+        "tqdm"
+    )
+    
+    for package in "${python_packages[@]}"; do
+        log_message "INFO" "Installing Python package: $package"
+        pip install "$package" >> "$LOG_FILE" 2>&1 || log_message "WARNING" "Failed to install $package"
+    done
+fi
 
 # Install password cracking tools
-log_message "INFO" "Installing password cracking tools..."
-install_package "hydra" "Network logon cracker"
-
-# Install virus generation tools
-log_message "INFO" "Installing virus generation tools..."
-install_package "metasploit" "Penetration testing framework"
-
-# Install HTTP/HTTPS generator tools
-log_message "INFO" "Installing HTTP/HTTPS generator tools..."
-install_package "apache2" "Apache HTTP Server"
-
-# Install Android development tools
-log_message "INFO" "Installing Android development tools..."
-install_package "openjdk-17" "Java Development Kit"
-install_package "gradle" "Build automation tool"
-install_package "android-tools" "Android debugging tools"
-
-# Install additional hacking tools
-log_message "INFO" "Installing additional hacking tools..."
-install_package "sqlmap" "SQL injection tool"
-install_package "nikto" "Web vulnerability scanner"
-install_package "dirb" "Web content scanner"
-install_package "john" "Password cracker"
-install_package "hashcat" "Advanced password recovery"
-install_package "wireshark-cli" "Network protocol analyzer"
-install_package "ettercap" "Network security tool"
-install_package "dsniff" "Network auditing toolkit"
-install_package "tcpdump" "Packet analyzer"
-install_package "masscan" "Internet-scale port scanner"
-
-# Install payload generation tools
-log_message "INFO" "Installing payload generation tools..."
-install_package "msfvenom" "Payload generator"
-install_package "shellnoob" "Shellcode writing toolkit"
+log_message "INFO" "Installing password security tools..."
+install_package "hydra" "Network logon cracker" "true"
+install_package "john" "Password cracker" "true"
+install_package "hashcat" "Advanced password recovery" "true"
 
 # Install web security tools
 log_message "INFO" "Installing web security tools..."
-install_package "gobuster" "Directory/file enumeration tool"
-install_package "wfuzz" "Web application fuzzer"
-install_package "whatweb" "Web technology identifier"
+install_package "sqlmap" "SQL injection tool" "true"
+install_package "nikto" "Web vulnerability scanner" "true"
+install_package "dirb" "Web content scanner" "true"
+install_package "gobuster" "Directory/file enumeration tool" "true"
 
-# Install social engineering tools
-log_message "INFO" "Installing social engineering tools..."
-install_package "setoolkit" "Social Engineering Toolkit"
+# Install network analysis tools
+log_message "INFO" "Installing network analysis tools..."
+install_package "tcpdump" "Packet analyzer"
+install_package "ngrep" "Network grep" "true"
+install_package "iftop" "Network bandwidth monitor" "true"
+install_package "netstat-nat" "Network statistics" "true"
 
-# App Compiler Configuration
-COMPILER_DIR="$HOME/tapx-souls/compiler"
-BUILD_DIR="$HOME/tapx-souls/builds"
-APK_OUTPUT_DIR="$HOME/tapx-souls/apks"
+# Install additional utilities
+log_message "INFO" "Installing additional utilities..."
+install_package "vim" "Text editor"
+install_package "nano" "Simple text editor"
+install_package "unzip" "Archive extraction tool"
+install_package "zip" "Archive creation tool"
+install_package "tar" "Archive tool"
+install_package "gzip" "Compression tool"
 
 # Function to setup compiler environment
 setup_compiler_environment() {
-    log_message "INFO" "Setting up Tapx-souls app compiler environment..."
+    log_message "INFO" "Setting up Tapx-souls development environment..."
     
     # Create necessary directories
-    mkdir -p "$COMPILER_DIR"
-    mkdir -p "$BUILD_DIR"
-    mkdir -p "$APK_OUTPUT_DIR"
-    mkdir -p "$HOME/tapx-souls/templates"
-    mkdir -p "$HOME/tapx-souls/resources"
+    mkdir -p "$HOME/tapx-souls"/{compiler,builds,apks,templates,resources,scripts,exploits,payloads}
     
-    # Install compiler dependencies
-    install_package "aapt" "Android Asset Packaging Tool"
-    install_package "dx" "Dalvik Executable format"
-    install_package "zipalign" "APK optimization tool"
-    install_package "apksigner" "APK signing tool"
+    # Set proper permissions
+    chmod 755 "$HOME/tapx-souls"
+    chmod 700 "$HOME/tapx-souls"/{scripts,exploits,payloads}
     
-    log_message "SUCCESS" "Compiler environment setup completed"
+    log_message "SUCCESS" "Development environment setup completed"
 }
 
 # Function to compile Android APK
@@ -917,116 +952,301 @@ build_android_apk() {
 
 # Create custom exploit scripts
 create_custom_exploits() {
-    log_message "INFO" "Creating custom exploit scripts..."
+    log_message "INFO" "Creating custom security scripts..."
     
-    mkdir -p "$HOME/tapx-souls/exploits"
-    mkdir -p "$HOME/tapx-souls/payloads"
-    mkdir -p "$HOME/tapx-souls/scripts"
-    
-    # Create WiFi deauth script
-    cat > "$HOME/tapx-souls/scripts/wifi_deauth.py" << 'EOF'
+    # Create network scanner script
+    cat > "$HOME/tapx-souls/scripts/network_scanner.py" << 'EOF'
 #!/usr/bin/env python3
-# WiFi Deauthentication Attack Script
-import subprocess
-import sys
-
-def deauth_attack(interface, bssid, client=None):
-    cmd = ["aireplay-ng", "--deauth", "10", "-a", bssid]
-    if client:
-        cmd.extend(["-c", client])
-    cmd.append(interface)
-    
-    try:
-        subprocess.run(cmd, check=True)
-        print(f"Deauth attack completed on {bssid}")
-    except subprocess.CalledProcessError as e:
-        print(f"Attack failed: {e}")
-
-if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python3 wifi_deauth.py <interface> <bssid> [client_mac]")
-        sys.exit(1)
-    
-    interface = sys.argv[1]
-    bssid = sys.argv[2]
-    client = sys.argv[3] if len(sys.argv) > 3 else None
-    
-    deauth_attack(interface, bssid, client)
-EOF
-
-    # Create port scanner script
-    cat > "$HOME/tapx-souls/scripts/advanced_scanner.py" << 'EOF'
-#!/usr/bin/env python3
-# Advanced Network Scanner
+"""
+Tapx-souls Network Scanner
+Simple network discovery and port scanning tool
+"""
 import socket
 import threading
+import subprocess
 import sys
-from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
 
-def scan_port(host, port):
+def ping_host(host):
+    """Check if host is alive using ping"""
+    try:
+        result = subprocess.run(['ping', '-c', '1', '-W', '1', host], 
+                              capture_output=True, text=True)
+        return result.returncode == 0
+    except:
+        return False
+
+def scan_port(host, port, timeout=1):
+    """Scan a single port on target host"""
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        sock.settimeout(1)
+        sock.settimeout(timeout)
         result = sock.connect_ex((host, port))
         sock.close()
-        
-        if result == 0:
-            try:
-                service = socket.getservbyport(port)
-            except:
-                service = "unknown"
-            print(f"Port {port}: Open ({service})")
+        return result == 0
     except:
-        pass
+        return False
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: python3 advanced_scanner.py <host>")
-        sys.exit(1)
+def scan_host(host, ports=None):
+    """Scan multiple ports on a host"""
+    if ports is None:
+        ports = [21, 22, 23, 25, 53, 80, 110, 135, 139, 143, 443, 993, 995, 3389, 5432, 3306]
     
-    host = sys.argv[1]
     print(f"Scanning {host}...")
-    print("-" * 40)
+    if not ping_host(host):
+        print(f"Host {host} appears to be down")
+        return
     
-    # Common ports
-    ports = [21, 22, 23, 25, 53, 80, 110, 111, 135, 139, 143, 443, 993, 995, 1723, 3306, 3389, 5432, 5900, 8080]
+    open_ports = []
+    with ThreadPoolExecutor(max_workers=50) as executor:
+        futures = {executor.submit(scan_port, host, port): port for port in ports}
+        for future in futures:
+            port = futures[future]
+            if future.result():
+                open_ports.append(port)
     
-    threads = []
-    for port in ports:
-        t = threading.Thread(target=scan_port, args=(host, port))
-        t.start()
-        threads.append(t)
-    
-    for t in threads:
-        t.join()
+    if open_ports:
+        print(f"Open ports on {host}: {', '.join(map(str, open_ports))}")
+    else:
+        print(f"No open ports found on {host}")
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) < 2:
+        print("Usage: python3 network_scanner.py <host>")
+        sys.exit(1)
+    
+    target = sys.argv[1]
+    scan_host(target)
 EOF
 
+    # Create WiFi scanner script  
+    cat > "$HOME/tapx-souls/scripts/wifi_scanner.py" << 'EOF'
+#!/usr/bin/env python3
+"""
+Tapx-souls WiFi Scanner
+WiFi network discovery tool
+"""
+import subprocess
+import re
+import sys
+
+def scan_wifi():
+    """Scan for available WiFi networks"""
+    try:
+        # Try termux-wifi-scaninfo first (Termux-specific)
+        result = subprocess.run(['termux-wifi-scaninfo'], 
+                              capture_output=True, text=True)
+        if result.returncode == 0:
+            print("WiFi Networks Found:")
+            print(result.stdout)
+            return
+    except FileNotFoundError:
+        pass
+    
+    # Fallback methods
+    print("WiFi scanning requires root access or termux-api")
+    print("Install termux-api: pkg install termux-api")
+
+if __name__ == "__main__":
+    scan_wifi()
+EOF
+
+    # Create system info script
+    cat > "$HOME/tapx-souls/scripts/system_info.py" << 'EOF'
+#!/usr/bin/env python3
+"""
+Tapx-souls System Information Gatherer
+"""
+import subprocess
+import os
+import platform
+
+def get_system_info():
+    """Gather system information"""
+    info = {}
+    
+    # Basic system info
+    info['Platform'] = platform.platform()
+    info['Architecture'] = platform.architecture()[0]
+    info['Processor'] = platform.processor() or "Unknown"
+    info['Python Version'] = platform.python_version()
+    
+    # Network info
+    try:
+        hostname = subprocess.check_output(['hostname']).decode().strip()
+        info['Hostname'] = hostname
+    except:
+        info['Hostname'] = "Unknown"
+    
+    # Memory info
+    try:
+        with open('/proc/meminfo', 'r') as f:
+            meminfo = f.read()
+            for line in meminfo.split('\n'):
+                if 'MemTotal' in line:
+                    info['Total Memory'] = line.split()[1] + " kB"
+                elif 'MemAvailable' in line:
+                    info['Available Memory'] = line.split()[1] + " kB"
+    except:
+        info['Memory'] = "Unknown"
+    
+    return info
+
+def display_info():
+    """Display gathered information"""
+    print("=" * 50)
+    print("TAPX-SOULS SYSTEM INFORMATION")
+    print("=" * 50)
+    
+    info = get_system_info()
+    for key, value in info.items():
+        print(f"{key:20}: {value}")
+    
+    print("=" * 50)
+
+if __name__ == "__main__":
+    display_info()
+EOF
+
+    # Make scripts executable
     chmod +x "$HOME/tapx-souls/scripts/"*.py
-    log_message "SUCCESS" "Custom exploit scripts created"
+    
+    # Create launcher script
+    cat > "$HOME/tapx-souls/tapx-launcher.sh" << 'EOF'
+#!/bin/bash
+# Tapx-souls Security Tools Launcher
+
+SCRIPT_DIR="$HOME/tapx-souls/scripts"
+
+show_menu() {
+    clear
+    echo "╔══════════════════════════════════════╗"
+    echo "║        TAPX-SOULS SECURITY SUITE     ║"
+    echo "╚══════════════════════════════════════╝"
+    echo ""
+    echo "Available Tools:"
+    echo "1) Network Scanner"
+    echo "2) WiFi Scanner" 
+    echo "3) System Information"
+    echo "4) Exit"
+    echo ""
+    read -p "Select option [1-4]: " choice
 }
 
-# Create Android APK if development tools are available
-if command -v gradle >/dev/null 2>&1; then
-    build_android_apk
-fi
+while true; do
+    show_menu
+    case $choice in
+        1)
+            read -p "Enter target IP/hostname: " target
+            python3 "$SCRIPT_DIR/network_scanner.py" "$target"
+            read -p "Press Enter to continue..."
+            ;;
+        2)
+            python3 "$SCRIPT_DIR/wifi_scanner.py"
+            read -p "Press Enter to continue..."
+            ;;
+        3)
+            python3 "$SCRIPT_DIR/system_info.py"
+            read -p "Press Enter to continue..."
+            ;;
+        4)
+            echo "Goodbye!"
+            exit 0
+            ;;
+        *)
+            echo "Invalid option"
+            sleep 1
+            ;;
+    esac
+done
+EOF
 
-# Create custom exploits and tools
+    chmod +x "$HOME/tapx-souls/tapx-launcher.sh"
+    
+    # Create symlink for easy access
+    ln -sf "$HOME/tapx-souls/tapx-launcher.sh" "$HOME/../usr/bin/tapx-souls"
+    
+    log_message "SUCCESS" "Custom security scripts created"
+}
+
+# Setup development environment
+setup_compiler_environment
+
+# Create custom security tools
 create_custom_exploits
 
-# Set custom terminal title
-echo -e "\033]0;Tapx-souls Security Terminal\007"
+# Create termux startup script
+create_startup_script() {
+    log_message "INFO" "Creating startup configuration..."
+    
+    cat > "$HOME/.bashrc_tapx" << 'EOF'
+# Tapx-souls Security Environment
+export PATH="$HOME/tapx-souls/scripts:$PATH"
+export TAPX_HOME="$HOME/tapx-souls"
+
+# Aliases
+alias tapx-scan='python3 $HOME/tapx-souls/scripts/network_scanner.py'
+alias tapx-wifi='python3 $HOME/tapx-souls/scripts/wifi_scanner.py'
+alias tapx-info='python3 $HOME/tapx-souls/scripts/system_info.py'
+alias tapx-launcher='$HOME/tapx-souls/tapx-launcher.sh'
+
+# Welcome message
+echo -e "\033[0;32m"
+echo "TAPX-SOULS Security Environment Loaded"
+echo "Type 'tapx-souls' to launch the security suite"
+echo -e "\033[0m"
+EOF
+
+    # Add to bashrc if not already present
+    if ! grep -q "source.*bashrc_tapx" "$HOME/.bashrc" 2>/dev/null; then
+        echo "source ~/.bashrc_tapx" >> "$HOME/.bashrc"
+    fi
+    
+    log_message "SUCCESS" "Startup configuration created"
+}
+
+create_startup_script
+
+# Final cleanup and summary
+cleanup_installation() {
+    log_message "INFO" "Performing installation cleanup..."
+    
+    # Clean package cache
+    pkg clean >> "$LOG_FILE" 2>&1
+    
+    # Set proper permissions
+    chmod 700 "$HOME/tapx-souls"
+    
+    log_message "SUCCESS" "Installation cleanup completed"
+}
+
+cleanup_installation
 
 # Display completion summary
 show_banner
-log_message "SUCCESS" "Installation completed!"
-echo -e "${GREEN}Installation Summary:${NC}"
-echo -e "Tools installed: ${GREEN}$TOOLS_INSTALLED${NC}/${TOTAL_TOOLS}"
-echo -e "Log file: ${CYAN}$LOG_FILE${NC}"
-echo -e "${YELLOW}Web interface available at: file://$(pwd)/index.html${NC}"
-echo -e "${PURPLE}App compiler available: ${CYAN}tapx-compiler --help${NC}"
-echo -e "${PURPLE}Compiler directory: ${CYAN}$COMPILER_DIR${NC}"
+log_message "SUCCESS" "Tapx-souls installation completed successfully!"
+
+echo -e "${GREEN}╔══════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║             INSTALLATION COMPLETE           ║${NC}"
+echo -e "${GREEN}╚══════════════════════════════════════════════╝${NC}"
 echo ""
-echo -e "${PURPLE}Happy hacking with Tapx-souls!${NC}"
+echo -e "${CYAN}Installation Summary:${NC}"
+echo -e "  Tools installed: ${GREEN}$TOOLS_INSTALLED${NC}/${TOTAL_TOOLS}"
+echo -e "  Log file: ${YELLOW}$LOG_FILE${NC}"
+echo -e "  Installation directory: ${YELLOW}$HOME/tapx-souls${NC}"
+echo ""
+echo -e "${PURPLE}Quick Start:${NC}"
+echo -e "  • Run security suite: ${CYAN}tapx-souls${NC}"
+echo -e "  • Network scan: ${CYAN}tapx-scan <target>${NC}"
+echo -e "  • WiFi scan: ${CYAN}tapx-wifi${NC}"
+echo -e "  • System info: ${CYAN}tapx-info${NC}"
+echo ""
+echo -e "${YELLOW}⚠ Important Security Notes:${NC}"
+echo -e "  • Use these tools responsibly and legally"
+echo -e "  • Only test on networks you own or have permission to test"
+echo -e "  • Some tools may require root access to function fully"
+echo ""
+echo -e "${GREEN}Happy ethical hacking with Tapx-souls! 🛡️${NC}"
+
+# Set custom terminal title
+echo -e "\033]0;Tapx-souls Security Terminal\007"
